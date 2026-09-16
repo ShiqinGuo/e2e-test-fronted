@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-09-12T18:12:20.615Z",
+  "projectId": "73f02fea-8e55-4e75-8668-d0ac48528629",
+  "groupId": "722f880b-35c8-4899-b720-d61f2b330b01",
+  "groupName": "订单业务流程",
+  "environmentId": "4c1b0f01-3243-4b4c-9ced-3e483f3c0623",
+  "runId": "12ca7771-a04b-4b60-988c-4baa20adb5b5",
+  "submittedBody": {
+    "environmentId": "4c1b0f01-3243-4b4c-9ced-3e483f3c0623",
+    "groupId": "722f880b-35c8-4899-b720-d61f2b330b01",
+    "retries": 0
+  },
+  "status": "passed",
+  "verification": "verified",
+  "summary": {
+    "flaky": 0,
+    "total": 2,
+    "failed": 0,
+    "passed": 2,
+    "skipped": 0,
+    "unverified": 0
+  },
+  "versionCount": 2,
+  "eventCount": 142,
+  "evidence": [
+    {
+      "scenarioId": "2ced3ede-470d-4a82-ae41-e6c6caabb8b4",
+      "scenarioName": "创建订单并查询",
+      "versionId": "d2b21252-1e4a-4abf-850c-c812b69927d5",
+      "testId": "6f85a7e5fa33d9840aa7-7d4c4345fea31f8c6be0",
+      "beginSeq": 2503,
+      "endSeq": 2573,
+      "status": "passed",
+      "assertionSeqs": [
+        2536,
+        2539,
+        2547,
+        2550,
+        2558
+      ],
+      "testTitle": "test",
+      "explicitUiIdentityVerified": true,
+      "attachmentPaths": [
+        "artifacts/000000-d2b21252-1e4a-4abf-850c-c812b69927d5-test/test-finished-1.png",
+        "artifacts/000000-d2b21252-1e4a-4abf-850c-c812b69927d5-test/trace.zip"
+      ],
+      "artifacts": [
+        {
+          "id": "8b5fe58b-7ffb-45c1-980d-8103cadef617",
+          "name": "000000-d2b21252-1e4a-4abf-850c-c812b69927d5-test/test-finished-1.png",
+          "kind": "screenshot",
+          "url": "/api/v1/projects/73f02fea-8e55-4e75-8668-d0ac48528629/runs/12ca7771-a04b-4b60-988c-4baa20adb5b5/artifacts/8b5fe58b-7ffb-45c1-980d-8103cadef617"
+        },
+        {
+          "id": "97624bfc-702c-4d88-bfff-c15b4ed1e783",
+          "name": "000000-d2b21252-1e4a-4abf-850c-c812b69927d5-test/trace.zip",
+          "kind": "trace",
+          "url": "/api/v1/projects/73f02fea-8e55-4e75-8668-d0ac48528629/runs/12ca7771-a04b-4b60-988c-4baa20adb5b5/artifacts/97624bfc-702c-4d88-bfff-c15b4ed1e783"
+        }
+      ]
+    },
+    {
+      "scenarioId": "8cd16b2a-05a3-43f9-8ab4-2e512f044422",
+      "scenarioName": "删除订单后确认不存在",
+      "versionId": "cb1e991e-6dca-4486-9204-729c003a623a",
+      "testId": "9389c0e00dabe7ef99f5-cdfef0413db4e3cb37b6",
+      "beginSeq": 2574,
+      "endSeq": 2637,
+      "status": "passed",
+      "assertionSeqs": [
+        2603,
+        2606,
+        2614,
+        2622
+      ],
+      "testTitle": "test",
+      "explicitUiIdentityVerified": true,
+      "attachmentPaths": [
+        "artifacts/000001-cb1e991e-6dca-4486-9204-729c003a623a-test/test-finished-1.png",
+        "artifacts/000001-cb1e991e-6dca-4486-9204-729c003a623a-test/trace.zip"
+      ],
+      "artifacts": [
+        {
+          "id": "0b690c31-a246-4705-be63-908f68d61314",
+          "name": "000001-cb1e991e-6dca-4486-9204-729c003a623a-test/test-finished-1.png",
+          "kind": "screenshot",
+          "url": "/api/v1/projects/73f02fea-8e55-4e75-8668-d0ac48528629/runs/12ca7771-a04b-4b60-988c-4baa20adb5b5/artifacts/0b690c31-a246-4705-be63-908f68d61314"
+        },
+        {
+          "id": "a423a09f-ae1b-4801-89bc-af54d4462bb8",
+          "name": "000001-cb1e991e-6dca-4486-9204-729c003a623a-test/trace.zip",
+          "kind": "trace",
+          "url": "/api/v1/projects/73f02fea-8e55-4e75-8668-d0ac48528629/runs/12ca7771-a04b-4b60-988c-4baa20adb5b5/artifacts/a423a09f-ae1b-4801-89bc-af54d4462bb8"
+        }
+      ]
+    }
+  ]
+}

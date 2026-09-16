@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>共享控件边界测试</title>
+    <style>
+      .controls-fixture { max-width: 800px; margin: 0 auto; padding: 24px; }
+      .fixture-section { display: grid; gap: 16px; padding: 16px; margin-top: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+      .fixture-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .fixture-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .fixture-values { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
+      .fixture-values > div { display: flex; gap: 4px; }
+      .fixture-edge { position: fixed; right: 12px; bottom: 12px; display: grid; gap: 8px; width: 176px; }
+      .fixture-edge > p { font-size: 12px; color: var(--muted); }
+      .fixture-modal-body { display: grid; gap: 16px; padding: 0 24px 24px; }
+      @media (max-width: 500px) { .controls-fixture { padding: 16px; } .fixture-grid { grid-template-columns: minmax(0, 1fr); } }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./controls.tsx"></script>
+  </body>
+</html>

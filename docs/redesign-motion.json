@@ -1,0 +1,98 @@
+[
+  {
+    "viewport": {
+      "width": 810,
+      "height": 1000
+    },
+    "evidence": {
+      "normal-popover": {
+        "animationName": "enter",
+        "animationDuration": "0.14s",
+        "transitionDuration": "0.14s"
+      },
+      "normal-select": {
+        "animationName": "enter",
+        "animationDuration": "0.14s",
+        "transitionDuration": "0.14s"
+      },
+      "normal-dialog": {
+        "animationName": "enter",
+        "animationDuration": "0.2s",
+        "transitionDuration": "0.2s"
+      },
+      "normal-overlay": {
+        "animationName": "enter",
+        "animationDuration": "0.2s",
+        "transitionDuration": "0.2s"
+      },
+      "reduced-popover": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      },
+      "reduced-select": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      },
+      "reduced-dialog": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      },
+      "reduced-overlay": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      }
+    }
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "evidence": {
+      "normal-popover": {
+        "animationName": "enter",
+        "animationDuration": "0.14s",
+        "transitionDuration": "0.14s"
+      },
+      "normal-select": {
+        "animationName": "enter",
+        "animationDuration": "0.14s",
+        "transitionDuration": "0.14s"
+      },
+      "normal-dialog": {
+        "animationName": "enter",
+        "animationDuration": "0.2s",
+        "transitionDuration": "0.2s"
+      },
+      "normal-overlay": {
+        "animationName": "enter",
+        "animationDuration": "0.2s",
+        "transitionDuration": "0.2s"
+      },
+      "reduced-popover": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      },
+      "reduced-select": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      },
+      "reduced-dialog": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      },
+      "reduced-overlay": {
+        "animationName": "none",
+        "animationDuration": "0s",
+        "transitionDuration": "0s"
+      }
+    }
+  }
+]

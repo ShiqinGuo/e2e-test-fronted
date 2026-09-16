@@ -1,0 +1,610 @@
+.environment-manager {
+  container-name: environment-settings;
+  container-type: inline-size;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--fg);
+  background: var(--canvas);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.env-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.env-heading {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.env-heading h1 {
+  margin: 0;
+  color: var(--fg);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.env-context-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+  max-width: 480px;
+}
+
+.env-context-controls > :last-child {
+  flex-shrink: 0;
+}
+
+.env-selector {
+  flex: 1;
+  min-width: 0;
+  max-width: 320px;
+}
+
+.env-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.env-main > .error-notice {
+  margin: 16px 24px;
+}
+
+.env-loading {
+  padding: 24px;
+}
+
+.env-editor {
+  width: 100%;
+  min-width: 0;
+}
+
+.env-save-bar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.env-save-heading {
+  min-width: 0;
+}
+
+.env-save-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.env-save-title h2 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--fg);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.env-draft-state {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.env-save-note {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.env-save-feedback {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.env-save-feedback .error-notice {
+  margin: 0;
+}
+
+.env-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.env-fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.env-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 24px;
+}
+
+.env-settings-group {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.env-settings-section {
+  display: grid;
+  grid-template-columns: minmax(144px, 0.35fr) minmax(0, 1fr);
+  gap: 24px;
+  min-width: 0;
+  padding: 24px;
+}
+
+.env-settings-section + .env-settings-section {
+  border-top: 1px solid var(--border);
+}
+
+.env-section-label {
+  min-width: 0;
+}
+
+.env-section-label h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+.env-section-label h3 svg {
+  color: var(--muted);
+}
+
+.env-section-label p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.env-section-content {
+  min-width: 0;
+}
+
+.env-basics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.env-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.env-tabs > * {
+  flex-shrink: 0;
+}
+
+.env-pair-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.env-pair-labels,
+.env-pair-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) 34px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.env-pair-labels {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.env-pair-row > input {
+  min-width: 0;
+}
+
+.env-mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.env-row-action {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+.env-origins {
+  resize: vertical;
+}
+
+.env-role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.env-inline-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.env-role {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.env-role-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.env-role-heading > :last-child {
+  margin-top: 24px;
+}
+
+.env-role-config {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.env-role-config > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.env-role-config > span > svg {
+  color: var(--muted);
+}
+
+.env-role-status {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.env-secret-input {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--canvas);
+}
+
+.env-secret-input > .error-notice {
+  margin: 0;
+}
+
+.env-upload-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.env-file-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.env-secret-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin-bottom: 12px;
+}
+
+.env-secret-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.env-secret-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.env-action-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.env-action-editor {
+  min-width: 0;
+}
+
+.env-code-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.env-json-editor {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.env-json-editor .cm-editor {
+  color: var(--fg);
+  background: var(--surface);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.env-json-editor .cm-gutters {
+  color: var(--muted);
+  background: var(--canvas);
+  border-right-color: var(--border);
+}
+
+.env-json-editor .cm-scroller {
+  overflow: auto;
+}
+
+.env-json-editor .cm-editor.cm-focused {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.env-action-reference {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.env-action-reference > summary {
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.env-reference-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.env-reference-content dl {
+  display: grid;
+  grid-template-columns: 144px minmax(0, 1fr);
+  align-content: start;
+  gap: 8px;
+  margin: 0;
+}
+
+.env-reference-content dt {
+  color: var(--fg);
+}
+
+.env-reference-content dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.env-reference-content pre {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--surface);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.env-footnote {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.env-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 24px;
+}
+
+@container environment-settings (max-width: 700px) {
+  .env-page-header {
+    padding: 12px 16px;
+  }
+
+  .env-context-controls {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .env-selector {
+    max-width: none;
+  }
+
+  .env-save-bar {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .env-save-title {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .env-form-content {
+    padding: 16px;
+  }
+
+  .env-settings-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .env-section-label p {
+    margin-top: 4px;
+  }
+
+  .env-basics {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .env-pair-labels {
+    display: none;
+  }
+
+  .env-pair-row {
+    grid-template-columns: minmax(0, 1fr) 34px;
+    align-items: start;
+    padding-bottom: 8px;
+  }
+
+  .env-pair-row > :first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .env-pair-row > :nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .env-pair-row > :last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .env-role-config {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 8px;
+  }
+
+  .env-role-config > span:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .env-role-config > .env-role-status {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .env-role-config > :last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .env-reference-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .env-reference-content dl {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .env-reference-content dd {
+    margin-bottom: 8px;
+  }
+
+  .env-main > .error-notice {
+    margin: 16px;
+  }
+}

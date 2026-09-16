@@ -1,0 +1,59 @@
+{
+  "checkedDate": "2026-09-13",
+  "timezone": "Asia/Shanghai",
+  "method": "Agent operated the actual Playwright recorder and Flowtest UI through the host browser capability",
+  "projectId": "6bb01c56-0c83-4ace-a337-17bb0093f22b",
+  "scenarioId": "cd9c147c-47f8-48d0-a961-b93ab26a3e85",
+  "environmentId": "c1ff1222-6fbb-4a97-8253-c8ad9d826b93",
+  "website": "http://host.docker.internal:18080/",
+  "scope": "Technical fixture; no user business system or direct database connection",
+  "records": [
+    {
+      "recordingId": "1f5ebf3e-774a-4fe0-851a-ab08a5427f1b",
+      "versionNumber": 1,
+      "source": "recording",
+      "runId": "cfbbb393-47e9-47b8-bd76-6f4b501ef283",
+      "status": "passed",
+      "verification": "verified",
+      "observed": [
+        "Actual order submission",
+        "Recorded visibility and text assertions",
+        "Trace actions, DOM snapshot, GET 200 and POST 201"
+      ]
+    },
+    {
+      "recordingId": "19ef02b5-c0f6-4263-a363-0070907cd63d",
+      "versionNumber": 2,
+      "versionId": "02a02c75-8a8c-456d-b354-ff9d2ee76f15",
+      "source": "recording",
+      "runId": "0e30d3b3-9403-41d2-95e1-5f869e778b60",
+      "status": "passed",
+      "verification": "verified",
+      "eventCount": 50,
+      "durationSecondsDisplayed": 6.7,
+      "observed": [
+        "Recorder stopped normally after the backend race fix",
+        "Complete goto, button click and result text assertion saved",
+        "Raw recorded version executed unchanged"
+      ]
+    },
+    {
+      "basedOnVersionId": "02a02c75-8a8c-456d-b354-ff9d2ee76f15",
+      "versionNumber": 3,
+      "versionId": "c3633588-6434-4277-b666-11df50d966a8",
+      "source": "ai",
+      "runId": "23c2a295-586f-4fea-a580-852d791f665d",
+      "status": "passed",
+      "verification": "verified",
+      "eventCount": 76,
+      "durationSecondsDisplayed": 7.3,
+      "observed": [
+        "POST /orders 201",
+        "GET /orders/15 200",
+        "reference expected draft-42 and actual draft-42",
+        "DELETE /orders/15 204"
+      ]
+    }
+  ],
+  "activeOperations": false
+}

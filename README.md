@@ -1,75 +1,88 @@
 # Flowtest Web 工作台
 
-基于 React、TypeScript 与 Vite 的 Web 业务流程测试平台前端。界面参考 Supabase Studio，复用固定版本的 shadcn/ui 与 Radix 组件，使用 Lucide SVG 和 CodeMirror。设计依据见 [设计调研](docs/design-research.md)，组件来源与许可见 [第三方 UI 说明](docs/third-party-ui.md)。生产页面只调用真实后端 API。
+**录制业务流程，重跑固定版本，把失败定位到具体断言和 Trace。**
 
-## 启动
+The Web workbench for Flowtest: record, edit and replay Playwright workflows with evidence you can inspect.
 
-需要 Node.js 22.12+（本次使用 Node.js 24）以及对应的 FastAPI 后端。
+[简体中文](README.md) · [English](README.en.md)
 
-```powershell
+[![MIT](https://img.shields.io/badge/license-MIT-6569cb)](LICENSE)
+[![React](https://img.shields.io/badge/workbench-React-6569cb)](package.json)
+[![Backend](https://img.shields.io/badge/backend-FastAPI-6569cb)](https://github.com/ShiqinGuo/e2e-test-svc)
+
+[开始使用](#quick-start) · [完整平台](https://github.com/ShiqinGuo/e2e-test-svc) · [技术架构](#architecture) · [反馈问题](https://github.com/ShiqinGuo/e2e-test-fronted/issues)
+
+在一个 Web 工作台里维护场景源码与版本、选择测试环境、执行单场景或测试组，并沿每次尝试查看断言、截图和官方 Trace。适合已有 Web 应用、需要反复验证业务流程的开发者和测试人员。
+
+![从浏览器录制到固定快照重跑，再保留首次失败和重试证据的 Flowtest 功能动画](docs/media/flowtest.gif)
+
+*程序绘制的功能演绎，使用示例数据，不是实际界面录屏。查看 [静态画面](docs/media/flowtest-poster.png) 或 [动画说明与源码](docs/media/README.md)。*
+
+## 你能直接做什么
+
+| 工作 | 工作台提供的操作 |
+| --- | --- |
+| 从操作开始 | 打开远程浏览器录制操作和断言，或导入现有 Playwright Test |
+| 修改测试 | CodeMirror 源码编辑、检查点辅助、版本差异和未保存草稿保护 |
+| 组织测试 | 项目、环境、测试组和场景；单场景或整组执行 |
+| 解释结果 | 区分运行状态与验证状态，保留首次失败、重试、跳过和未验证 |
+| 回到现场 | 查看原快照、逐尝试证据及私有 Trace；历史重跑创建独立记录 |
+
+![Flowtest 实际工作台历史验收截图](docs/screenshots/redesign/shell-1440.png)
+
+*上图为 2026-09-13 本地技术夹具验收截图；[查看运行与断言界面](docs/screenshots/redesign/run-1440.png)。*
+
+<a id="quick-start"></a>
+## 开始使用
+
+本仓库是前端，完整使用需要后端、PostgreSQL 和两个 Playwright Docker 镜像。前端不会启动后端或部署被测网站。
+
+| 仓库 | 负责什么 |
+| --- | --- |
+| [e2e-test-svc](https://github.com/ShiqinGuo/e2e-test-svc) | FastAPI 控制服务、PostgreSQL、Playwright 执行与录制容器 |
+| [e2e-test-fronted](https://github.com/ShiqinGuo/e2e-test-fronted) | React Web 工作台：编辑场景、管理环境、查看运行和证据 |
+
+1. 先按 [后端启动指南](https://github.com/ShiqinGuo/e2e-test-svc#quick-start) 准备运行环境并启动 `localhost:4100`。
+2. 使用 Node.js 22.12+（已验收环境为 Node.js 24），在另一个终端启动前端：
+
+```sh
 git clone https://github.com/ShiqinGuo/e2e-test-fronted.git
 cd e2e-test-fronted
 npm ci
 npm run dev
 ```
 
-打开 <http://127.0.0.1:5173/>。开发服务器将 `/api` HTTP 和 WebSocket 请求代理到 `http://localhost:4100`，请求携带 HttpOnly 会话 Cookie。后端应允许 `http://127.0.0.1:5173` 与 `http://localhost:5173` 来源。
+3. 打开 [http://127.0.0.1:5173](http://127.0.0.1:5173)，注册账号，创建项目和测试环境。
+4. 创建测试组与场景，录制或导入测试；保存版本后运行，再查看断言和 Trace。
 
-需要覆盖代理目标时，在启动命令前设置：
+默认 `/api` 的 HTTP 和 WebSocket 代理到 `http://localhost:4100`。更改代理、生产构建和同源反向代理配置见 [开发指南](docs/development.md)。尚无被测网站时可用 [后端订单技术夹具](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/development.md#验证)，它需要单独启动，不是在线演示。
 
-```powershell
-$env:API_PROXY_TARGET = 'http://localhost:4100'
-npm run dev
-```
+<a id="architecture"></a>
+## 技术架构
 
-后端启动、PostgreSQL 和 Playwright Worker 的准备参见 [e2e-test-svc](https://github.com/ShiqinGuo/e2e-test-svc)。前端不启动或替代后端，也不部署被测应用。
+![Flowtest 从 React 工作台到 FastAPI 控制层和 Playwright 容器的架构](docs/media/architecture.svg)
 
-## 检查与构建
+React / TypeScript / Vite 通过同源 Cookie 会话访问 FastAPI，后端负责项目权限、快照与执行。源码是权威输入；检查点面板只在可以可靠定位时局部修改 AST。源码、事件、断言与工件的具体归属由运行快照及测试/尝试身份确定。
 
-```powershell
+[组件与源码对应](docs/architecture.md) · [后端 API 契约](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/api-contract.md)
+
+## 验证与当前范围
+
+[2026-09-13 验收索引](docs/redesign-verification.md) 记录了 38 项单元测试、15 项浏览器回归及 1440 / 810 / 390px 布局检查。业务回归连接真实 API、PostgreSQL 和运行器；部分基础控件测试使用独立 fixture。远程录制的历史证据另见 [功能验收记录](docs/verification.md)。
+
+当前还没有首个真实业务网站案例；上述结果是本地技术夹具的历史证据，不表示本次发布重新完成所有浏览器和容器验收。[本次发布检查](docs/publishing-verification.md) 单独记录。
+
+没有真实断言时不会仅因操作成功显示完全验证；重试后通过仍保留 `flaky` 和首次失败。未知代码结构保持源码编辑，不编造可视化检查点。
+
+## 开发与贡献
+
+```sh
 npm test
 npm run build
 ```
 
-后端启动且共享技术夹具就绪后，可重跑真实浏览器验收：
+浏览器验收需要完整后端与夹具，命令和说明见 [开发指南](docs/development.md)。提交问题时请附复现步骤、预期/实际结果和脱敏截图；后端执行或录制问题可提交至 [后端 Issues](https://github.com/ShiqinGuo/e2e-test-svc/issues)。
 
-```powershell
-npx playwright install chromium
-npm run test:e2e
-```
+## License
 
-`e2e/workbench.spec.ts` 创建独立验收账号，经过真实注册、项目/环境/组/场景 API，检查版本持久化、源码检查点、草稿保护、退出/登录和窄屏布局。截图写入 `docs/screenshots/`。可用 `FRONTEND_URL` 与 `TEST_WEBSITE_URL` 覆盖前端和夹具地址；默认夹具为后端提供的 `http://host.docker.internal:18080/`。验收账号的数据保留在该本地数据库中，便于复查。
-
-`e2e/groups.spec.ts` 补充两个独立场景的真实 Web 分组执行，检查浏览器提交的 `groupId`、两份固化源码、组汇总和逐场景断言、截图及 Trace 工件。单独复跑使用 `npx playwright test e2e/groups.spec.ts --output group-test-results --reporter=list`，证据索引写入 `docs/group-acceptance.json`。
-
-构建产物位于 `dist/`。部署时由同一域名的反向代理提供静态文件，将 `/api`（包括 WebSocket upgrade）转发到后端。`vite preview` 只用于检查构建产物，业务 API 需另外配置同源反向代理；不应将前端静态预览视为完整可用平台。
-
-## 操作流程
-
-1. 注册或登录，创建项目。
-2. 添加测试环境：已部署的网站、API 基址、角色、变量与前置/后置请求。
-3. 新建测试组及场景，使用浏览器录制器或导入 Playwright 文件。
-4. 在 CodeMirror 或检查点面板编辑，填写修改说明并保存新版本。
-5. 选择环境和角色，执行单场景或测试组。
-6. 在运行记录中查看步骤、断言、原始事件、工件与官方 Trace Viewer；重新执行产生独立记录。
-
-环境与场景的未保存修改有离开保护。会话过期时工作台留在当前页面，重新登录原账号后继续编辑。录制会话 ID 保留在页面 URL，也可从录制面板恢复已有会话。
-
-## 数据与证据边界
-
-- 所有请求经过 `src/api.ts`，Cookie 会话与项目授权由后端执行。
-- Playwright 源码是唯一权威。可视化面板使用 Babel AST 的源码位置局部修改；未知结构、注释及模块保持原文。不可靠的修改留在代码编辑器处理。
-- 场景版本只新增，运行绑定的源码与脱敏环境快照来自后端。检查点元数据不能替代实际断言。
-- 运行状态与验证状态分别呈现；只有操作、跳过与重试后通过不会伪装为完全验证。事件按序号追加，首次失败和各次尝试均保留。
-- 浏览器点选发生在后端提供的官方录制器内。前端没有将截图包装成自定义目标选择器。
-- 敏感变量与角色认证数据只写入；服务端返回配置存在标记，前端不回显凭据。前置/后置请求中的敏感头使用变量引用。
-- 工件、录制器与 Trace 使用同源私有链接。真实运行、录制依赖及当前验收范围见 `docs/verification.md`。
-
-API 契约由后端维护：[api-contract.md](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/api-contract.md)，运行时 OpenAPI 为 `/api/openapi.json`。
-
-## 参考
-
-- [Supabase Design System](https://supabase.com/design-system)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Playwright Test generator](https://playwright.dev/docs/codegen)
-- [Playwright Trace Viewer](https://playwright.dev/docs/trace-viewer)
+Flowtest 自有代码采用 [MIT](LICENSE)。shadcn/ui、Supabase 示例及其他依赖保留原有许可和署名，见 [第三方 UI 来源与适配](docs/third-party-ui.md)。

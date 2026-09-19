@@ -1,5 +1,7 @@
-# Presentation assets
+# 展示素材
 
-These concept-animation assets are shared with the Flowtest backend; they use only synthetic data and are not screen recordings. The palette and story follow evidence identity, immutable snapshots and preserved failed attempts.
+- 动画：[中文](flowtest-zh-CN.gif) · [English](flowtest-en.gif)
+- 静态图：[中文](flowtest-zh-CN-poster.png) · [English](flowtest-en-poster.png)
+- 架构图：[中文](architecture.svg) · [English](architecture.en.svg)
 
-The authoritative [renderer and regeneration instructions](https://github.com/ShiqinGuo/e2e-test-svc/tree/main/docs/media) are maintained in the backend repository. `flowtest-poster.png` is the static alternative. The architecture source map is in [architecture.md](../architecture.md).
+素材与后端共用，动画使用示例数据。生成脚本与说明见 [后端素材目录](https://github.com/ShiqinGuo/e2e-test-svc/tree/main/docs/media)，组件职责见 [架构说明](../architecture.md)。

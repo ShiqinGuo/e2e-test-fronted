@@ -1,0 +1,60 @@
+
+Running 2 tests using 1 worker
+
+(node:55812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\visual-workspace.spec.ts:7:1 › Linear 列表显示、筛选与窄屏布局 (4.2s)
+  x  2 e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 (1.5m)
+
+
+  1) e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ──────────────────────────────────────────────
+
+    Test timeout of 90000ms exceeded.
+
+    Error: locator.click: Test timeout of 90000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '在验收流程添加场景', exact: true })
+        - locator resolved to <button data-size="sm" data-slot="button" data-variant="ghost" aria-label="在验收流程添加场景" class="inline-flex shrink-0 items-center justify-center text-sm font-medium whitespace-nowrap transition-[background-color,color,border-color,box-shadow,opacity] duration-150 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&…>…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div role="dialog" tabindex="-1" data-align="end" data-state="open" id="radix-_r_1q_" data-side="bottom" data-slot="popover-content" class="z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 da…>…</div> from <div data-radix-popper-content-wrapper="">…</div> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div role="dialog" tabindex="-1" data-align="end" data-state="open" id="radix-_r_1q_" data-side="bottom" data-slot="popover-content" class="z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 da…>…</div> from <div data-radix-popper-content-wrapper="">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        136 × waiting for element to be visible, enabled and stable
+            - element is visible, enabled and stable
+            - scrolling into view if needed
+            - done scrolling
+            - <div role="dialog" tabindex="-1" data-align="end" data-state="open" id="radix-_r_1q_" data-side="bottom" data-slot="popover-content" class="z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 da…>…</div> from <div data-radix-popper-content-wrapper="">…</div> subtree intercepts pointer events
+          - retrying click action
+            - waiting 500ms
+      - element was detached from the DOM, retrying
+
+
+      58 |   await page.getByRole('option', { name: '按测试组', exact: true }).click()
+      59 |   await page.keyboard.press('Escape')
+    > 60 |   await page.getByRole('button', { name: '在验收流程添加场景', exact: true }).click()
+         |                                                                      ^
+      61 |   await page.getByLabel('名称', { exact: true }).fill('技术夹具检查')
+      62 |   await page.getByRole('button', { name: '创建', exact: true }).click()
+      63 |   await expect(page.getByRole('heading', { name: '技术夹具检查' })).toBeVisible()
+        at D:\code\e2e-test-fronted\e2e\workbench.spec.ts:60:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-web-visual-final\workbench-真实会话、项目环境、场景版本与草稿保护\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-web-visual-final\workbench-真实会话、项目环境、场景版本与草稿保护\error-context.md
+
+  1 failed
+    e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ───────────────────────────────────────────────
+  1 passed (1.6m)

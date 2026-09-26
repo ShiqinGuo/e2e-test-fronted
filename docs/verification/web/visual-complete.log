@@ -1,0 +1,10 @@
+
+Running 3 tests using 1 worker
+
+(node:57316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\runs.spec.ts:6:1 › 真实执行证据、混合结果、原快照重跑与取消 (25.5s)
+  ok 2 e2e\visual-workspace.spec.ts:7:1 › Linear 列表显示、筛选与窄屏布局 (5.2s)
+  ok 3 e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 (22.2s)
+
+  3 passed (53.7s)

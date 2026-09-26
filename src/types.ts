@@ -17,7 +17,9 @@ export interface Project {
   id: string
   name: string
   description: string
-  ownerId: string
+  organizationId: string
+  workspaceId: string
+  createdBy: string
   createdAt: string
   updatedAt: string
 }
@@ -103,7 +105,6 @@ export interface RunSummary {
   unverified: number
 }
 export interface Run {
-  sourceRunId?: string | null
   rerunOf?: string | null
   id: string
   projectId: string
@@ -143,7 +144,7 @@ export interface Recording {
   projectId: string
   environmentId: string
   scenarioId: string | null
-  status: 'starting' | 'ready' | 'stopped' | 'error'
+  status: 'starting' | 'ready' | 'stopping' | 'stopped' | 'error'
   createdAt: string
   expiresAt: string
   viewerUrl: string | null
@@ -151,6 +152,50 @@ export interface Recording {
   checks: Check[]
   error: string | null
 }
-export interface Capabilities {
-  [key: string]: unknown
+export type OrganizationRole = 'owner' | 'admin' | 'member' | 'viewer'
+export interface Organization {
+  id: string
+  name: string
+  role: OrganizationRole
+  defaultWorkspaceId: string
+  createdAt: string
+  updatedAt: string
+}
+export interface Workspace {
+  id: string
+  organizationId: string
+  name: string
+  role: OrganizationRole
+  createdAt: string
+  updatedAt: string
+}
+export interface Member {
+  userId: string
+  name: string
+  email: string
+  role: OrganizationRole
+  joinedAt: string
+}
+export interface Invitation {
+  id: string
+  organizationId: string
+  email: string
+  role: Exclude<OrganizationRole, 'owner'>
+  status: 'pending' | 'accepted' | 'revoked' | 'expired'
+  expiresAt: string
+  createdAt: string
+}
+export interface InvitationPreview {
+  organizationId: string
+  organizationName: string
+  email: string
+  role: OrganizationRole
+  status: Invitation['status']
+  expiresAt: string
+}
+export interface RuntimeCapabilities {
+  playwrightVersion: string
+  runner: { available: boolean; reason?: string }
+  recorder: { available: boolean; reason?: string }
+  databaseChecks: string
 }

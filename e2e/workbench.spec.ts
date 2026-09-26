@@ -22,17 +22,21 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await page.getByLabel('邮箱', { exact: true }).fill(email)
   await page.getByLabel('密码', { exact: true }).fill(password)
   await page.getByRole('button', { name: '创建账号', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '建立你的团队工作区' })).toBeVisible()
+  await page.getByRole('button', { name: '创建组织', exact: true }).last().click()
+  await page.getByLabel('名称', { exact: true }).fill(`协作验收-${unique}`)
+  await page.getByRole('button', { name: '创建', exact: true }).click()
   await expect(page.getByRole('heading', { name: '创建第一个项目' })).toBeVisible()
   await page.getByRole('button', { name: '创建项目', exact: true }).last().click()
   await page.getByLabel('名称', { exact: true }).fill(projectName)
   await page.screenshot({
-    path: 'docs/screenshots/redesign/create-dialog.png',
+    path: 'docs/screenshots/web/create-dialog.png',
     fullPage: true,
     animations: 'disabled',
   })
   await page.getByRole('button', { name: '创建', exact: true }).click()
-  await expect(page.getByLabel('选择项目')).toContainText(projectName)
-  await page.getByRole('button', { name: '添加环境', exact: true }).click()
+  await expect(page.locator('.breadcrumbs')).toContainText(projectName)
+  await page.getByRole('button', { name: '环境', exact: true }).click()
   await page.getByLabel('环境名称', { exact: true }).fill('浏览器验收环境')
   await page
     .getByLabel('网站 1 地址')
@@ -49,7 +53,13 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await createGroupTrigger.click()
   await page.getByLabel('名称', { exact: true }).fill('验收流程')
   await page.getByRole('button', { name: '创建', exact: true }).click()
-  await page.getByRole('button', { name: '添加场景', exact: true }).click()
+  await page.getByRole('button', { name: '显示', exact: true }).click()
+  await page.getByRole('combobox', { name: '分组方式', exact: true }).click()
+  await page.getByRole('option', { name: '按测试组', exact: true }).click()
+  await expect(page.getByRole('listbox')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(page.locator('.display-popover')).toHaveCount(0)
+  await page.getByRole('button', { name: '在验收流程添加场景', exact: true }).click()
   await page.getByLabel('名称', { exact: true }).fill('技术夹具检查')
   await page.getByRole('button', { name: '创建', exact: true }).click()
   await expect(page.getByRole('heading', { name: '技术夹具检查' })).toBeVisible()
@@ -66,6 +76,13 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await showSource(page)
   await expect(source).toContainText('toBeVisible')
   await expect(page.getByText('未保存', { exact: true })).toBeVisible()
+  const draftUrl = page.url()
+  await page.goBack()
+  await expect(page.getByRole('dialog', { name: '未保存的修改' })).toBeVisible()
+  await page.getByRole('button', { name: '继续编辑', exact: true }).click()
+  await expect(page).toHaveURL(draftUrl)
+  await expect(source).toContainText('toBeVisible')
+
   await page.getByRole('button', { name: '环境', exact: true }).click()
   await expect(page.getByRole('dialog', { name: '未保存的修改' })).toBeVisible()
   await page.getByRole('button', { name: '继续编辑', exact: true }).click()
@@ -74,7 +91,7 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await page.getByRole('button', { name: '保存新版本', exact: true }).click()
   await page.getByLabel('修改说明', { exact: true }).fill('通过面板增加真实断言')
   await page.screenshot({
-    path: 'docs/screenshots/redesign/save-dialog.png',
+    path: 'docs/screenshots/web/save-dialog.png',
     fullPage: true,
     animations: 'disabled',
   })
@@ -84,14 +101,18 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   const scenarioActions = page.getByRole('dialog', { name: '场景操作', exact: true })
   await expect(scenarioActions.getByRole('button', { name: '导入代码', exact: true })).toBeVisible()
   await expect(scenarioActions.getByRole('button', { name: '复用模块', exact: true })).toBeVisible()
-  await page.screenshot({ path: 'docs/screenshots/redesign/workbench-actions.png', fullPage: true, animations: 'disabled' })
+  await page.screenshot({
+    path: 'docs/screenshots/web/workbench-actions.png',
+    fullPage: true,
+    animations: 'disabled',
+  })
   await scenarioActions.getByRole('button', { name: '版本差异', exact: true }).click()
   const versionDiff = page.getByRole('dialog', { name: '版本差异 · v1 → v2', exact: true })
   await expect(versionDiff.locator('tr.added')).toContainText('toBeVisible')
   await versionDiff.getByRole('button', { name: '关闭', exact: true }).click()
   await expect(page.getByRole('button', { name: '场景操作', exact: true })).toBeFocused()
   await page.screenshot({
-    path: 'docs/screenshots/redesign/workbench.png',
+    path: 'docs/screenshots/web/workbench.png',
     fullPage: true,
     animations: 'disabled',
   })
@@ -101,16 +122,16 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   const preserved = (await source.innerText()) + '\n// session-recovery-draft'
   await source.fill(preserved)
   await page.request.post('/api/auth/sign-out', { data: {} })
-  const expiredCreateGroupTrigger = page.getByRole('button', { name: '新建测试组', exact: true })
-  await expiredCreateGroupTrigger.click()
-  await page.getByLabel('名称', { exact: true }).fill('过期会话不会自动重试写入')
-  await page.getByRole('button', { name: '创建', exact: true }).click()
+  const saveTrigger = page.getByRole('button', { name: '保存新版本', exact: true })
+  await saveTrigger.click()
+  await page.getByLabel('修改说明', { exact: true }).fill('会话失效时保存不能自动重试')
+  await page.getByRole('dialog').getByRole('button', { name: '保存新版本', exact: true }).click()
   await expect(page.getByRole('heading', { name: '登录工作台' })).toBeVisible()
   await page.getByLabel('密码', { exact: true }).fill(password)
   await page.getByRole('button', { name: '登录', exact: true }).click()
   await expect(page.getByRole('heading', { name: '登录工作台' })).toBeHidden()
   await page.getByRole('button', { name: '取消', exact: true }).click()
-  await expect(expiredCreateGroupTrigger).toBeFocused()
+  await expect(saveTrigger).toBeFocused()
   await expect(source).toContainText('session-recovery-draft')
   await expect(page.getByText('未保存', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: '保存新版本', exact: true }).click()
@@ -121,21 +142,21 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await page.setViewportSize({ width: 810, height: 1000 })
   const navigationTrigger = page.getByRole('button', { name: '切换导航', exact: true })
   await navigationTrigger.click()
-  await expect(page.getByRole('dialog', { name: '项目导航' })).toBeVisible()
+  await expect(page.getByRole('dialog', { name: '工作区导航' })).toBeVisible()
   await page.screenshot({
-    path: 'docs/screenshots/redesign/workbench-810-navigation.png',
+    path: 'docs/screenshots/web/workbench-810-navigation.png',
     fullPage: true,
     animations: 'disabled',
   })
   await page.keyboard.press('Escape')
-  await expect(page.getByRole('dialog', { name: '项目导航' })).toBeHidden()
+  await expect(page.getByRole('dialog', { name: '工作区导航' })).toBeHidden()
   await expect(navigationTrigger).toBeFocused()
   await showSource(page)
   await expect(page.getByRole('complementary', { name: '步骤与检查点' })).toBeHidden()
   await expect(source).toContainText('session-recovery-draft')
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.screenshot({
-    path: 'docs/screenshots/redesign/workbench-810.png',
+    path: 'docs/screenshots/web/workbench-810.png',
     fullPage: true,
     animations: 'disabled',
   })
@@ -143,7 +164,7 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await expect(source).toBeHidden()
   await expect(page.getByRole('complementary', { name: '步骤与检查点' })).toBeVisible()
   await page.screenshot({
-    path: 'docs/screenshots/redesign/workbench-810-steps.png',
+    path: 'docs/screenshots/web/workbench-810-steps.png',
     fullPage: true,
     animations: 'disabled',
   })
@@ -153,7 +174,7 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await page.getByRole('combobox', { name: '搜索环境…' }).fill('浏览器验收环境')
   await expect(page.getByRole('option', { name: /浏览器验收环境/ })).toBeVisible()
   await page.screenshot({
-    path: 'docs/screenshots/redesign/workbench-810-environment.png',
+    path: 'docs/screenshots/web/workbench-810-environment.png',
     fullPage: true,
     animations: 'disabled',
   })
@@ -167,7 +188,7 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
     .poll(() => environmentSelector.evaluate((element) => element.getBoundingClientRect().width))
     .toBeGreaterThan(100)
   await page.screenshot({
-    path: 'docs/screenshots/redesign/workbench-mobile.png',
+    path: 'docs/screenshots/web/workbench-mobile.png',
     fullPage: true,
     animations: 'disabled',
   })
@@ -181,9 +202,22 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
       return !!top && (top === element || element.contains(top))
     }),
   ).toBe(true)
+  await page.reload()
+  await showSource(page)
+  await expect(source).toContainText('session-recovery-draft')
+  await source.fill((await source.innerText()) + '\n// discard-navigation-draft')
+  await page.goBack()
+  await expect(page.getByRole('dialog', { name: '未保存的修改' })).toBeVisible()
+  await page.getByRole('button', { name: '放弃草稿并继续', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '技术夹具检查', exact: true })).toBeHidden()
+  await page.goForward()
+  await expect(page.getByRole('heading', { name: '技术夹具检查', exact: true })).toBeVisible()
+  await showSource(page)
+  await expect(source).toContainText('session-recovery-draft')
+  await expect(source).not.toContainText('discard-navigation-draft')
   await page.getByRole('button', { name: '切换导航', exact: true }).click()
   await page
-    .getByRole('dialog', { name: '项目导航' })
+    .getByRole('dialog', { name: '工作区导航' })
     .getByRole('button', { name: '退出登录', exact: true })
     .click()
   await expect(page.getByRole('heading', { name: '登录工作台' })).toBeVisible()
@@ -193,7 +227,7 @@ test('真实会话、项目环境、场景版本与草稿保护', async ({ page 
   await expect(page.getByRole('heading', { name: '登录工作台' })).toBeHidden()
   await page.getByRole('button', { name: '切换导航', exact: true }).click()
   await expect(
-    page.getByRole('dialog', { name: '项目导航' }).getByRole('combobox', { name: '选择项目' }),
+    page.getByRole('dialog', { name: '工作区导航' }).getByRole('button', { name: new RegExp(projectName) }),
   ).toContainText(projectName)
   expect(errors).toEqual([])
 })

@@ -1,8 +1,9 @@
+import { createProject } from './helpers'
 import { randomUUID } from 'node:crypto'
 import { writeFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 
-test('真实执行证据、混合结果、原快照重跑与取消', async ({ page }) => {
+test('真实执行证据、混合结果、原快照重跑与取消', async ({ page }, testInfo) => {
   test.setTimeout(300_000)
   const id = randomUUID().slice(0, 8)
   const api = page.request
@@ -10,7 +11,7 @@ test('真实执行证据、混合结果、原快照重跑与取消', async ({ pa
     data: { name: '运行证据验收', email: `runs-${id}@example.com`, password: `${randomUUID()}Aa8!` },
   })
   expect(signup.status()).toBe(201)
-  const project = await (await api.post('/api/v1/projects', { data: { name: `运行验收-${id}` } })).json()
+  const project = await createProject(api, `运行验收-${id}`)
   const base = `/api/v1/projects/${project.id}`
   const environment = await (
     await api.post(`${base}/environments`, {
@@ -68,13 +69,13 @@ test('保留失败', async () => { expect('actual').toBe('expected'); });
   expect(run.verification).toBe('partial')
   await expect(page.locator('.run-detail-header').getByText('部分验证', { exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: '查看过程', exact: true })).toBeVisible({ timeout: 30_000 })
-  await page.screenshot({ path: 'docs/screenshots/redesign/run-evidence.png', fullPage: true })
+  await page.screenshot({ path: testInfo.outputPath('run-evidence.png'), fullPage: true })
   const popupPromise = page.waitForEvent('popup')
   await page.getByRole('link', { name: '查看过程', exact: true }).click()
   const trace = await popupPromise
   await expect(trace).toHaveTitle(/Playwright Trace Viewer/, { timeout: 30_000 })
   await expect(trace.getByRole('treeitem').first()).toBeVisible({ timeout: 30_000 })
-  await trace.screenshot({ path: 'docs/screenshots/redesign/trace-viewer.png', fullPage: true })
+  await trace.screenshot({ path: testInfo.outputPath('trace-viewer.png'), fullPage: true })
   await trace.close()
   await api.patch(`${base}/environments/${environment.id}`, {
     data: { name: '已改为 Fixture B', websites: { main: 'http://host.docker.internal:18081/' } },
@@ -91,7 +92,7 @@ test('保留失败', async () => { expect('actual').toBe('expected'); });
   await expect.poll(() => new URL(page.url()).searchParams.get('run')).not.toBe(runId)
   const rerunId = new URL(page.url()).searchParams.get('run')!
   const rerun = await (await api.get(`${base}/runs/${rerunId}`)).json()
-  expect(rerun.sourceRunId || rerun.rerunOf).toBe(runId)
+  expect(rerun.rerunOf).toBe(runId)
   expect(rerun.versions[0].id).toBe(version.id)
   expect(rerun.environmentSnapshot.websites.main).toBe('http://host.docker.internal:18080/')
   expect((await (await api.get(`${base}/runs/${runId}`)).json()).status).toBe('failed')
@@ -99,9 +100,9 @@ test('保留失败', async () => { expect('actual').toBe('expected'); });
   await expect(page.locator('.run-detail-header').getByText('已取消', { exact: true })).toBeVisible({
     timeout: 60_000,
   })
-  await page.screenshot({ path: 'docs/screenshots/redesign/rerun-cancelled.png', fullPage: true })
+  await page.screenshot({ path: testInfo.outputPath('rerun-cancelled.png'), fullPage: true })
   await writeFile(
-    'docs/run-acceptance.json',
+    testInfo.outputPath('run-acceptance.json'),
     JSON.stringify(
       {
         checkedAt: new Date().toISOString(),
@@ -114,7 +115,7 @@ test('保留失败', async () => { expect('actual').toBe('expected'); });
         verification: run.verification,
         summary: run.summary,
         rerunId,
-        rerunSourceId: rerun.sourceRunId || rerun.rerunOf,
+        rerunSourceId: rerun.rerunOf,
         rerunVersionId: rerun.versions[0].id,
         rerunWebsite: rerun.environmentSnapshot.websites.main,
         rerunCancelled: true,

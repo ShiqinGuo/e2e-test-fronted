@@ -49,7 +49,7 @@ export function Auth({
       <section className="auth-card">
         <div className="auth-heading">
           <h1>{mode === 'login' ? '登录工作台' : '创建账号'}</h1>
-          <p>{mode === 'login' ? '继续你的业务流程测试。' : '创建项目，开始录制与验证。'}</p>
+          <p>{mode === 'login' ? '继续你的业务流程测试。' : '创建组织或加入团队，开始测试协作。'}</p>
         </div>
         <ErrorNotice error={sessionError} retry={retrySession} />
         <form onSubmit={submit} className="stack">
@@ -58,6 +58,7 @@ export function Auth({
             <Field label="姓名">
               <Input
                 autoComplete="name"
+                placeholder="你的姓名"
                 required
                 maxLength={80}
                 value={name}
@@ -69,6 +70,7 @@ export function Auth({
             <Input
               type="email"
               autoComplete="email"
+              placeholder="name@company.com"
               required
               readOnly={!!expectedEmail}
               value={email}
@@ -79,6 +81,7 @@ export function Auth({
             <Input
               type="password"
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              placeholder={mode === 'register' ? '设置密码，至少 12 个字符' : '请输入密码'}
               required
               minLength={mode === 'register' ? 12 : undefined}
               value={password}

@@ -32,6 +32,7 @@ interface RunWorkspaceProps {
   selectedRunId?: string
   onSelectRun: (id: string) => void
   onRerun?: (run: Run) => void
+  canEdit: boolean
   scenarios: Scenario[]
 }
 interface EventPage {
@@ -234,12 +235,14 @@ function RunDetails({
   projectId,
   runId,
   onRerun,
+  canEdit,
   onSelectRun,
   scenarios,
 }: {
   projectId: string
   runId: string
   onRerun?: (run: Run) => void
+  canEdit: boolean
   onSelectRun: (id: string) => void
   scenarios: Scenario[]
 }) {
@@ -317,7 +320,7 @@ function RunDetails({
       </div>
     )
   const artifacts = artifactsQuery.data || []
-  const sourceRunId = run.sourceRunId || run.rerunOf
+  const sourceRunId = run.rerunOf
   const traceExists = artifacts.some(
     (artifact) =>
       artifact.kind.toLowerCase().includes('trace') ||
@@ -349,7 +352,7 @@ function RunDetails({
           <IconButton label="刷新运行证据" onClick={refresh}>
             <RefreshCw size={16} className={runQuery.isFetching ? 'spin' : ''} />
           </IconButton>
-          {active && (
+          {canEdit && active && (
             <Button variant="outline" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
               <Square size={14} aria-hidden="true" />
               {cancel.isPending ? '取消中' : '取消运行'}
@@ -487,6 +490,7 @@ export function RunWorkspace({
   selectedRunId,
   onSelectRun,
   onRerun,
+  canEdit,
   scenarios,
 }: RunWorkspaceProps) {
   const runsQuery = useQuery({
@@ -559,6 +563,7 @@ export function RunWorkspace({
             projectId={projectId}
             runId={selectedRunId}
             onRerun={onRerun}
+            canEdit={canEdit}
             onSelectRun={onSelectRun}
             scenarios={scenarios}
           />

@@ -10,7 +10,7 @@
 
 [开始使用](#quick-start) · [完整平台](https://github.com/ShiqinGuo/e2e-test-svc) · [技术架构](#architecture) · [反馈问题](https://github.com/ShiqinGuo/e2e-test-fronted/issues)
 
-在一个 Web 工作台里维护场景源码与版本、选择测试环境、执行单场景或测试组，并沿每次尝试查看断言、截图和官方 Trace。适合已有 Web 应用、需要反复验证业务流程的开发者和测试人员。
+在浏览器里创建组织、加入团队、切换工作区，维护场景源码与版本、选择测试环境、执行单场景或测试组，并沿每次尝试查看断言、截图和官方 Trace。适合已有 Web 应用、需要反复验证业务流程的开发者和测试人员。
 
 ![从浏览器录制到固定快照重跑，再保留首次失败和重试证据的 Flowtest 功能动画](docs/media/flowtest-zh-CN.gif)
 
@@ -22,18 +22,19 @@
 | --- | --- |
 | 从操作开始 | 打开远程浏览器录制操作和断言，或导入现有 Playwright Test |
 | 修改测试 | CodeMirror 源码编辑、检查点辅助、版本差异和未保存草稿保护 |
-| 组织测试 | 项目、环境、测试组和场景；单场景或整组执行 |
+| 团队协作 | 创建组织、邀请成员、切换工作区；owner/admin/member/viewer 角色 |
+| 组织测试 | 工作区内的项目、环境、测试组和场景；单场景或整组执行 |
 | 解释结果 | 区分运行状态与验证状态，保留首次失败、重试、跳过和未验证 |
 | 回到现场 | 查看原快照、逐尝试证据及私有 Trace；历史重跑创建独立记录 |
 
-![Flowtest 实际工作台历史验收截图](docs/screenshots/redesign/shell-1440.png)
+![Flowtest Linear 风格的 Web 场景列表](docs/screenshots/web/linear-list-1366.png)
 
 [查看运行与断言界面](docs/screenshots/redesign/run-1440.png)
 
 <a id="quick-start"></a>
 ## 开始使用
 
-本仓库是前端，完整使用需要后端、PostgreSQL 和两个 Playwright Docker 镜像。
+团队成员只需浏览器。下列步骤供部署者使用：本仓库是前端，服务端需要 FastAPI、PostgreSQL 和两个 Playwright Docker 镜像。
 
 | 仓库 | 负责什么 |
 | --- | --- |
@@ -50,7 +51,7 @@ npm ci
 npm run dev
 ```
 
-3. 打开 [http://127.0.0.1:5173](http://127.0.0.1:5173)，注册账号，创建项目和测试环境。
+3. 打开 [http://127.0.0.1:5173](http://127.0.0.1:5173)，注册账号，创建组织或通过邀请加入团队；在工作区中创建项目和测试环境。
 4. 创建测试组与场景，录制或导入测试；保存版本后运行，再查看断言和 Trace。
 
 默认 `/api` 的 HTTP 和 WebSocket 代理到 `http://localhost:4100`。更改代理、生产构建和同源反向代理配置见 [开发指南](docs/development.md)。尚无被测网站时可用 [后端订单示例](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/development.md#验证)。
@@ -60,13 +61,13 @@ npm run dev
 
 ![Flowtest 从 React 工作台到 FastAPI 控制层和 Playwright 容器的架构](docs/media/architecture.svg)
 
-React / TypeScript / Vite 通过同源 Cookie 会话访问 FastAPI，后端负责项目权限、快照与执行。源码是权威输入；检查点面板只在可以可靠定位时局部修改 AST。源码、事件、断言与工件的具体归属由运行快照及测试/尝试身份确定。
+React / TypeScript / Vite 通过同源 Cookie 会话访问 FastAPI，后端根据项目所属组织的成员角色执行权限校验，并负责快照与执行。源码是权威输入；检查点面板只在可以可靠定位时局部修改 AST。源码、事件、断言与工件的具体归属由运行快照及测试/尝试身份确定。
 
 [组件与源码对应](docs/architecture.md) · [后端 API 契约](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/api-contract.md)
 
 ## 验证
 
-覆盖场景编辑、运行证据、快照重跑与响应式布局，详见 [工作台验收](docs/redesign-verification.md) 和 [录制与运行记录](docs/verification.md)。
+当前组织/RBAC/邀请和 Linear 界面重构见 [Web 协作验收](docs/web-refactor-verification.md)。历史场景编辑、运行证据、快照重跑与响应式布局记录见 [工作台验收](docs/redesign-verification.md) 和 [录制与运行记录](docs/verification.md)。
 
 ## 开发与贡献
 

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { App } from './App'
 import { TooltipProvider } from './components/ui'
 import './styles.css'
+import './app/workspace.css'
 
 const client = new QueryClient({
   defaultOptions: {

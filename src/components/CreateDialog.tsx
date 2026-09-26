@@ -7,11 +7,13 @@ export function CreateDialog({
   open,
   onClose,
   onCreate,
+  showDescription = true,
 }: {
   title: string
   open: boolean
   onClose: () => void
   onCreate: (name: string, description: string) => Promise<void>
+  showDescription?: boolean
 }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -52,14 +54,16 @@ export function CreateDialog({
               onChange={(e) => setName(e.target.value)}
             />
           </Field>
-          <Field label="备注（选填）">
-            <Textarea
-              rows={3}
-              maxLength={2000}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </Field>
+          {showDescription && (
+            <Field label="备注（选填）">
+              <Textarea
+                rows={3}
+                maxLength={2000}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Field>
+          )}
         </div>
         <footer className="dialog-footer">
           <Button type="button" variant="outline" disabled={pending} onClick={onClose}>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flowtest · Linear 视觉对照</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; background: #f3f3f4; color: #29292d; font: 14px/1.6 system-ui, sans-serif; }
+    h1 { font-size: 20px; margin: 0 0 8px; }
+    p { color: #686870; margin: 0 0 20px; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    figure { margin: 0; min-width: 0; }
+    figcaption { margin-bottom: 8px; font-weight: 600; }
+    img { width: 100%; display: block; border: 1px solid #ddd; border-radius: 5px; }
+    a { color: inherit; }
+    details { margin-top: 24px; }
+    details img { max-width: 960px; margin-top: 12px; }
+    @media (max-width: 1000px) { .comparison { grid-template-columns: 1fr; } }
+  </style>
+  <h1>Linear 参考与 Flowtest 实现</h1>
+  <p>两张图均为 2732 × 1536 像素；实现截图来自 1366 × 768、2× 像素比的真实浏览器。比较导航、留白、行高、层级和浮层；业务字段与中文文案不同。</p>
+  <div class="comparison">
+    <figure>
+      <figcaption><a href="https://refero.design/pages/409eadeb-a66b-45ee-a379-88909adabdbb">Linear 原始参考 · Refero</a></figcaption>
+      <img alt="Linear 项目列表与 Display 面板" src="https://images.refero.design/screenshots/linear.app/desktop/cb7e2188-67d8-44bf-970c-bce146b70aed/0.jpg" />
+    </figure>
+    <figure>
+      <figcaption>Flowtest · 实际实现，2026-09-27</figcaption>
+      <img alt="Flowtest 场景列表与显示面板" src="../../screenshots/web/linear-display-1366.png" />
+    </figure>
+  </div>
+  <details><summary>查看用户指出问题时的旧版截图</summary><img alt="修改前：层级过多、表单式侧栏与紫色操作按钮" src="visual-before.png" /></details>
+</html>

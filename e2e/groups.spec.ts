@@ -1,3 +1,4 @@
+import { createProject } from './helpers'
 import { randomUUID } from 'node:crypto'
 import { writeFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
@@ -11,7 +12,7 @@ test('真实 Web 分组执行固化两个独立场景并保留各自证据', asy
     data: { name: '分组运行验收', email: `group-${unique}@example.com`, password: `${randomUUID()}Aa9!` },
   })
   expect(signup.status()).toBe(201)
-  const project = await (await api.post('/api/v1/projects', { data: { name: `分组验收-${unique}` } })).json()
+  const project = await createProject(api, `分组验收-${unique}`)
   const base = `/api/v1/projects/${project.id}`
   const environment = await (
     await api.post(`${base}/environments`, {
@@ -110,7 +111,7 @@ test('${definition.testTitle}', async ({ page, platform }) => {
   }
   await expect(page.locator('.run-meta')).toContainText(`分组 ${group.id.slice(0, 8)}`)
   await expect(page.locator('.run-detail-header')).toContainText('断言已验证')
-  await page.screenshot({ path: 'docs/screenshots/redesign/group-run-summary.png', fullPage: false })
+  await page.screenshot({ path: 'docs/screenshots/web/group-run-summary.png', fullPage: false })
 
   const events: RunEvent[] = []
   let after = 0
@@ -178,7 +179,7 @@ test('${definition.testTitle}', async ({ page, platform }) => {
     await expect(detail.getByLabel('期望与实际结果')).toBeVisible()
     await detail.getByLabel('期望与实际结果').scrollIntoViewIfNeeded()
     await page.screenshot({
-      path: `docs/screenshots/redesign/group-scene-${index + 1}-evidence.png`,
+      path: `docs/screenshots/web/group-scene-${index + 1}-evidence.png`,
       fullPage: false,
     })
     for (const artifact of sceneArtifacts) {
@@ -211,7 +212,7 @@ test('${definition.testTitle}', async ({ page, platform }) => {
   }
   await page
     .locator('.run-artifact-grid')
-    .screenshot({ path: 'docs/screenshots/redesign/group-artifact-identities.png' })
+    .screenshot({ path: 'docs/screenshots/web/group-artifact-identities.png' })
   await page.locator('.run-snapshots > details').first().locator('summary').first().click()
   for (const scenario of scenarios) {
     const snapshot = page
@@ -221,11 +222,9 @@ test('${definition.testTitle}', async ({ page, platform }) => {
     await expect(snapshot).toContainText(scenario.versionId)
     await expect(snapshot).toContainText(scenario.code)
   }
-  await page
-    .locator('.run-versions')
-    .screenshot({ path: 'docs/screenshots/redesign/group-version-snapshots.png' })
+  await page.locator('.run-versions').screenshot({ path: 'docs/screenshots/web/group-version-snapshots.png' })
   await writeFile(
-    'docs/group-acceptance.json',
+    'docs/verification/web/group-acceptance.json',
     JSON.stringify(
       {
         checkedAt: new Date().toISOString(),

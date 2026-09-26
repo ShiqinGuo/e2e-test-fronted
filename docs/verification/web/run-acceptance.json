@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-09-26T17:33:41.466Z",
+  "projectId": "926d334a-c1d6-49ab-988b-6baf9827c6bb",
+  "scenarioId": "27232e4a-e6f9-41a8-97ea-1fa968e96480",
+  "environmentId": "475fc2aa-85da-4521-99e6-987dd22a52a4",
+  "versionId": "0e8ba69c-80b1-4d40-81cc-c9e6fb9eb367",
+  "runId": "f346462e-15e7-4929-9b62-ba4242d2d712",
+  "status": "failed",
+  "verification": "partial",
+  "summary": {
+    "total": 5,
+    "passed": 3,
+    "failed": 1,
+    "skipped": 1,
+    "flaky": 1,
+    "unverified": 1
+  },
+  "rerunId": "6ede4ba6-f04e-48f6-b876-d84a397a5e16",
+  "rerunSourceId": "f346462e-15e7-4929-9b62-ba4242d2d712",
+  "rerunVersionId": "0e8ba69c-80b1-4d40-81cc-c9e6fb9eb367",
+  "rerunWebsite": "http://host.docker.internal:18080/",
+  "rerunCancelled": true,
+  "traceActionsVisible": true
+}

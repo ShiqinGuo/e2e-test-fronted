@@ -49,6 +49,8 @@ interface Props {
   onClose: () => void
   onSaved?: (environment: Environment) => void
   onDirtyChange?: (dirty: boolean) => void
+  onBusyChange?: (busy: boolean) => void
+  readOnly?: boolean
 }
 type Section = 'addresses' | 'identity' | 'actions'
 type Selection = 'new' | string
@@ -67,7 +69,14 @@ function environmentHost(environment: Environment) {
   }
 }
 
-function EnvironmentManagerContent({ projectId, onClose, onSaved, onDirtyChange }: Props) {
+function EnvironmentManagerContent({
+  projectId,
+  onClose,
+  onSaved,
+  onDirtyChange,
+  onBusyChange,
+  readOnly = false,
+}: Props) {
   const queryClient = useQueryClient()
   const [selection, setSelection] = useState<Selection>()
   const [dirty, setDirty] = useState(false)
@@ -87,8 +96,9 @@ function EnvironmentManagerContent({ projectId, onClose, onSaved, onDirtyChange 
     queryFn: ({ signal }) => api.list<Environment>(`${projectPath(projectId)}/environments`, signal),
   })
   useEffect(() => {
-    if (selection === undefined && environments.data) setSelection(environments.data[0]?.id ?? 'new')
-  }, [environments.data, selection])
+    if (selection === undefined && environments.data)
+      setSelection(environments.data[0]?.id ?? (readOnly ? undefined : 'new'))
+  }, [environments.data, selection, readOnly])
   const selected = environments.data?.find((environment) => environment.id === selection)
   const changeSelection = (next: Selection) => {
     if (saving || next === selection) return
@@ -150,7 +160,7 @@ function EnvironmentManagerContent({ projectId, onClose, onSaved, onDirtyChange 
           <Button
             variant="outline"
             type="button"
-            disabled={saving}
+            disabled={saving || readOnly}
             onClick={() => changeSelection('new')}
           >
             <Plus size={16} />
@@ -180,7 +190,11 @@ function EnvironmentManagerContent({ projectId, onClose, onSaved, onDirtyChange 
               dirty={dirty}
               success={success}
               onSaved={saved}
-              onSaving={setSaving}
+              readOnly={readOnly}
+              onSaving={(value) => {
+                setSaving(value)
+                onBusyChange?.(value)
+              }}
               onDirty={(value) => {
                 updateDirty(value)
                 if (value) setSuccess('')
@@ -230,6 +244,7 @@ function EnvironmentEditor({
   onSaved,
   onDirty,
   onSaving,
+  readOnly,
 }: {
   environment?: Environment
   projectId: string
@@ -238,6 +253,7 @@ function EnvironmentEditor({
   onSaved: (environment: Environment) => void
   onDirty: (dirty: boolean) => void
   onSaving: (saving: boolean) => void
+  readOnly: boolean
 }) {
   const [draft, setDraft] = useState<EnvironmentDraft>(() => environmentToDraft(environment))
   const [section, setSection] = useState<Section>('addresses')
@@ -285,7 +301,7 @@ function EnvironmentEditor({
       className="env-editor"
       onSubmit={(event) => {
         event.preventDefault()
-        if (mutation.isPending) return
+        if (readOnly || mutation.isPending) return
         try {
           const payload = buildEnvironmentPayload(draft)
           setValidationError(undefined)
@@ -300,7 +316,12 @@ function EnvironmentEditor({
         <div className="env-save-heading">
           <div className="env-save-title">
             <h2 title={environment?.name}>{environment ? environment.name : '新建环境'}</h2>
-            {dirty && <span className="env-draft-state"><Circle size={12} />未保存</span>}
+            {dirty && (
+              <span className="env-draft-state">
+                <Circle size={12} />
+                未保存
+              </span>
+            )}
           </div>
           <p className="env-save-note">
             {environment
@@ -308,44 +329,54 @@ function EnvironmentEditor({
               : '填写网站地址后，即可用于录制和运行。'}
           </p>
         </div>
-        <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? <Spinner label="保存中" /> : <><Save size={16} />保存环境</>}
+        <Button type="submit" disabled={readOnly || mutation.isPending}>
+          {mutation.isPending ? (
+            <Spinner label="保存中" />
+          ) : (
+            <>
+              <Save size={16} />
+              保存环境
+            </>
+          )}
         </Button>
         {!!(validationError || mutation.error || success) && (
           <div className="env-save-feedback">
             <ErrorNotice error={validationError || mutation.error} />
             {success && (
               <span className="env-success" role="status">
-                <Check size={16} />{success}
+                <Check size={16} />
+                {success}
               </span>
             )}
           </div>
         )}
       </div>
-      <fieldset disabled={mutation.isPending} className="env-fieldset">
+      <div className="env-fieldset">
         <div className="env-form-content">
-          <div className="env-settings-group">
-            <SettingsSection title="基本信息" icon={Settings2}>
-              <div className="env-basics">
-                <Field label="环境名称">
-                  <Input
-                    autoFocus={!environment}
-                    required
-                    value={draft.name}
-                    onChange={(event) => update('name', event.target.value)}
-                    placeholder="例如：预发布"
-                  />
-                </Field>
-                <Field label="备注">
-                  <Input
-                    value={draft.description}
-                    onChange={(event) => update('description', event.target.value)}
-                    placeholder="可选"
-                  />
-                </Field>
-              </div>
-            </SettingsSection>
-          </div>
+          <fieldset disabled={readOnly || mutation.isPending} className="env-fieldset">
+            <div className="env-settings-group">
+              <SettingsSection title="基本信息" icon={Settings2}>
+                <div className="env-basics">
+                  <Field label="环境名称">
+                    <Input
+                      autoFocus={!environment}
+                      required
+                      value={draft.name}
+                      onChange={(event) => update('name', event.target.value)}
+                      placeholder="例如：预发布"
+                    />
+                  </Field>
+                  <Field label="备注">
+                    <Input
+                      value={draft.description}
+                      onChange={(event) => update('description', event.target.value)}
+                      placeholder="可选"
+                    />
+                  </Field>
+                </div>
+              </SettingsSection>
+            </div>
+          </fieldset>
           <nav className="env-tabs" aria-label="环境配置分类">
             {tabs.map(({ id, label, icon: Icon }) => (
               <Button
@@ -360,163 +391,190 @@ function EnvironmentEditor({
               </Button>
             ))}
           </nav>
-          {section === 'addresses' && (
-            <div className="env-settings-group">
-              <SettingsSection title="网站" icon={Globe} description="至少一个网站。录制时按名称选择。">
-                <PairEditor
-                  label="网站"
-                  rows={draft.websites}
-                  onChange={(rows) => update('websites', rows)}
-                  kind="url"
-                  placeholder="https://test.example.com"
-                  namePlaceholder="main"
-                />
-              </SettingsSection>
-              <SettingsSection title="API 基址" icon={Server} description="用于前置请求、清理与接口检查。">
-                <PairEditor
-                  label="API 基址"
-                  rows={draft.apiBases}
-                  onChange={(rows) => update('apiBases', rows)}
-                  kind="url"
-                  placeholder="https://api.test.example.com"
-                  namePlaceholder="main"
-                />
-              </SettingsSection>
-              <SettingsSection title="允许的来源" icon={ShieldCheck}>
-                <Field label="额外来源" hint="每行一个完整来源，不含路径。">
-                  <Textarea
-                    className="env-mono env-origins"
-                    rows={3}
-                    value={draft.allowedOrigins}
-                    onChange={(event) => update('allowedOrigins', event.target.value)}
-                    placeholder="https://accounts.example.com"
+          <fieldset disabled={readOnly || mutation.isPending} className="env-fieldset">
+            {section === 'addresses' && (
+              <div className="env-settings-group">
+                <SettingsSection title="网站" icon={Globe} description="至少一个网站。录制时按名称选择。">
+                  <PairEditor
+                    label="网站"
+                    rows={draft.websites}
+                    onChange={(rows) => update('websites', rows)}
+                    kind="url"
+                    placeholder="https://test.example.com"
+                    namePlaceholder="main"
                   />
-                </Field>
-              </SettingsSection>
-            </div>
-          )}
-          {section === 'identity' && (
-            <div className="env-settings-group">
-              <SettingsSection
-                title="角色"
-                icon={ShieldCheck}
-                description="保存浏览器状态和请求头，不回显已有凭据。"
-              >
-                <div className="env-role-list">
-                  {!draft.roles.length && (
-                    <p className="env-inline-empty">未配置角色，运行使用匿名浏览器。</p>
-                  )}
-                  {draft.roles.map((role, index) => (
-                    <RoleEditor
-                      role={role}
-                      key={role.id}
-                      index={index}
-                      onChange={(next) =>
-                        update('roles', draft.roles.map((item) => (item.id === role.id ? next : item)))
-                      }
-                      onRemove={() => update('roles', draft.roles.filter((item) => item.id !== role.id))}
+                </SettingsSection>
+                <SettingsSection title="API 基址" icon={Server} description="用于前置请求、清理与接口检查。">
+                  <PairEditor
+                    label="API 基址"
+                    rows={draft.apiBases}
+                    onChange={(rows) => update('apiBases', rows)}
+                    kind="url"
+                    placeholder="https://api.test.example.com"
+                    namePlaceholder="main"
+                  />
+                </SettingsSection>
+                <SettingsSection title="允许的来源" icon={ShieldCheck}>
+                  <Field label="额外来源" hint="每行一个完整来源，不含路径。">
+                    <Textarea
+                      className="env-mono env-origins"
+                      rows={3}
+                      value={draft.allowedOrigins}
+                      onChange={(event) => update('allowedOrigins', event.target.value)}
+                      placeholder="https://accounts.example.com"
                     />
-                  ))}
-                  <div className="env-row-action">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => update('roles', [...draft.roles, newRole()])}
-                    >
-                      <Plus size={16} />添加角色
-                    </Button>
-                  </div>
-                </div>
-              </SettingsSection>
-              <SettingsSection title="普通变量" icon={Settings2} description="请求中使用 {{variable}} 引用。">
-                <PairEditor
-                  label="普通变量"
-                  rows={draft.variables}
-                  onChange={(rows) => update('variables', rows)}
-                  placeholder="值"
-                  namePlaceholder="variable"
-                />
-              </SettingsSection>
-              <SettingsSection
-                title="敏感变量"
-                icon={LockKeyhole}
-                description="仅写入新值。未修改的变量保留。"
-              >
-                {!!environment?.secretVariableKeys?.length && (
-                  <div className="env-secret-list">
-                    {environment.secretVariableKeys.map((key) => (
-                      <div className="env-secret-entry" key={key}>
-                        <span className="env-secret-name" title={key}><LockKeyhole size={16} />{key}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          aria-label={`更新敏感变量 ${key}`}
-                          disabled={draft.secrets.some((row) => row.key === key)}
-                          onClick={() => update('secrets', [...draft.secrets, newPair(key)])}
-                        >
-                          更新
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <PairEditor
-                  label="敏感变量"
-                  rows={draft.secrets}
-                  onChange={(rows) => update('secrets', rows)}
-                  kind="password"
-                  placeholder="输入新值"
-                  namePlaceholder="secret_key"
-                />
-              </SettingsSection>
-            </div>
-          )}
-          {section === 'actions' && (
-            <div className="env-action-content">
+                  </Field>
+                </SettingsSection>
+              </div>
+            )}
+            {section === 'identity' && (
               <div className="env-settings-group">
                 <SettingsSection
-                  title="前置请求"
-                  icon={ListChecks}
-                  description="运行前执行。apiBase 使用已配置的 API 名称。"
+                  title="角色"
+                  icon={ShieldCheck}
+                  description="保存浏览器状态和请求头，不回显已有凭据。"
                 >
-                  <ActionEditor
-                    label="前置请求"
-                    value={draft.setup}
-                    disabled={mutation.isPending}
-                    onChange={(value) => update('setup', value)}
+                  <div className="env-role-list">
+                    {!draft.roles.length && (
+                      <p className="env-inline-empty">未配置角色，运行使用匿名浏览器。</p>
+                    )}
+                    {draft.roles.map((role, index) => (
+                      <RoleEditor
+                        role={role}
+                        key={role.id}
+                        index={index}
+                        onChange={(next) =>
+                          update(
+                            'roles',
+                            draft.roles.map((item) => (item.id === role.id ? next : item)),
+                          )
+                        }
+                        onRemove={() =>
+                          update(
+                            'roles',
+                            draft.roles.filter((item) => item.id !== role.id),
+                          )
+                        }
+                      />
+                    ))}
+                    <div className="env-row-action">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => update('roles', [...draft.roles, newRole()])}
+                      >
+                        <Plus size={16} />
+                        添加角色
+                      </Button>
+                    </div>
+                  </div>
+                </SettingsSection>
+                <SettingsSection
+                  title="普通变量"
+                  icon={Settings2}
+                  description="请求中使用 {{variable}} 引用。"
+                >
+                  <PairEditor
+                    label="普通变量"
+                    rows={draft.variables}
+                    onChange={(rows) => update('variables', rows)}
+                    placeholder="值"
+                    namePlaceholder="variable"
                   />
                 </SettingsSection>
                 <SettingsSection
-                  title="后置清理"
-                  icon={ListChecks}
-                  description="运行后清理数据。敏感信息使用 {{variable}} 引用。"
+                  title="敏感变量"
+                  icon={LockKeyhole}
+                  description="仅写入新值。未修改的变量保留。"
                 >
-                  <ActionEditor
-                    label="后置清理"
-                    value={draft.cleanup}
-                    disabled={mutation.isPending}
-                    onChange={(value) => update('cleanup', value)}
+                  {!!environment?.secretVariableKeys?.length && (
+                    <div className="env-secret-list">
+                      {environment.secretVariableKeys.map((key) => (
+                        <div className="env-secret-entry" key={key}>
+                          <span className="env-secret-name" title={key}>
+                            <LockKeyhole size={16} />
+                            {key}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            aria-label={`更新敏感变量 ${key}`}
+                            disabled={draft.secrets.some((row) => row.key === key)}
+                            onClick={() => update('secrets', [...draft.secrets, newPair(key)])}
+                          >
+                            更新
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <PairEditor
+                    label="敏感变量"
+                    rows={draft.secrets}
+                    onChange={(rows) => update('secrets', rows)}
+                    kind="password"
+                    placeholder="输入新值"
+                    namePlaceholder="secret_key"
                   />
                 </SettingsSection>
               </div>
-              <details className="env-action-reference">
-                <summary>ApiAction 字段与示例</summary>
-                <div className="env-reference-content">
-                  <dl>
-                    <dt>name / apiBase</dt><dd>请求名称 / 已配置的 API 名称</dd>
-                    <dt>method / path</dt><dd>HTTP 方法 / 相对路径</dd>
-                    <dt>expectedStatus</dt><dd>预期 HTTP 状态码；业务结果应另加断言</dd>
-                    <dt>headers / body</dt><dd>可选请求头与 JSON 请求体</dd>
-                    <dt>capture</dt><dd>变量名到响应 JSON 路径的映射</dd>
-                  </dl>
-                  <pre>{'{\n  "name": "准备数据",\n  "apiBase": "main",\n  "method": "POST",\n  "path": "/fixtures",\n  "expectedStatus": 201,\n  "body": { "name": "{{testName}}" },\n  "capture": { "fixtureId": "id" }\n}'}</pre>
+            )}
+            {section === 'actions' && (
+              <div className="env-action-content">
+                <div className="env-settings-group">
+                  <SettingsSection
+                    title="前置请求"
+                    icon={ListChecks}
+                    description="运行前执行。apiBase 使用已配置的 API 名称。"
+                  >
+                    <ActionEditor
+                      label="前置请求"
+                      value={draft.setup}
+                      disabled={readOnly || mutation.isPending}
+                      onChange={(value) => update('setup', value)}
+                    />
+                  </SettingsSection>
+                  <SettingsSection
+                    title="后置清理"
+                    icon={ListChecks}
+                    description="运行后清理数据。敏感信息使用 {{variable}} 引用。"
+                  >
+                    <ActionEditor
+                      label="后置清理"
+                      value={draft.cleanup}
+                      disabled={readOnly || mutation.isPending}
+                      onChange={(value) => update('cleanup', value)}
+                    />
+                  </SettingsSection>
                 </div>
-              </details>
-            </div>
-          )}
+                <details className="env-action-reference">
+                  <summary>ApiAction 字段与示例</summary>
+                  <div className="env-reference-content">
+                    <dl>
+                      <dt>name / apiBase</dt>
+                      <dd>请求名称 / 已配置的 API 名称</dd>
+                      <dt>method / path</dt>
+                      <dd>HTTP 方法 / 相对路径</dd>
+                      <dt>expectedStatus</dt>
+                      <dd>预期 HTTP 状态码；业务结果应另加断言</dd>
+                      <dt>headers / body</dt>
+                      <dd>可选请求头与 JSON 请求体</dd>
+                      <dt>capture</dt>
+                      <dd>变量名到响应 JSON 路径的映射</dd>
+                    </dl>
+                    <pre>
+                      {
+                        '{\n  "name": "准备数据",\n  "apiBase": "main",\n  "method": "POST",\n  "path": "/fixtures",\n  "expectedStatus": 201,\n  "body": { "name": "{{testName}}" },\n  "capture": { "fixtureId": "id" }\n}'
+                      }
+                    </pre>
+                  </div>
+                </details>
+              </div>
+            )}
+          </fieldset>
           <p className="env-footnote">环境修改仅影响后续运行。</p>
         </div>
-      </fieldset>
+      </div>
     </form>
   )
 }
@@ -535,7 +593,10 @@ function SettingsSection({
   return (
     <section className="env-settings-section">
       <div className="env-section-label">
-        <h3><Icon size={16} />{title}</h3>
+        <h3>
+          <Icon size={16} />
+          {title}
+        </h3>
         {description && <p>{description}</p>}
       </div>
       <div className="env-section-content">{children}</div>
@@ -562,7 +623,8 @@ function PairEditor({
     <div className="env-pair-editor">
       {!!rows.length && (
         <div className="env-pair-labels" aria-hidden="true">
-          <span>名称</span><span>{kind === 'url' ? '地址' : '值'}</span>
+          <span>名称</span>
+          <span>{kind === 'url' ? '地址' : '值'}</span>
         </div>
       )}
       {rows.map((row, index) => (
@@ -584,7 +646,9 @@ function PairEditor({
             type={kind}
             value={row.value}
             onChange={(event) =>
-              onChange(rows.map((item) => (item.id === row.id ? { ...item, value: event.target.value } : item)))
+              onChange(
+                rows.map((item) => (item.id === row.id ? { ...item, value: event.target.value } : item)),
+              )
             }
             placeholder={placeholder}
             autoComplete={kind === 'password' ? 'new-password' : 'off'}
@@ -601,7 +665,8 @@ function PairEditor({
       ))}
       <div className="env-row-action">
         <Button type="button" variant="outline" onClick={() => onChange([...rows, newPair()])}>
-          <Plus size={16} />添加{label}
+          <Plus size={16} />
+          添加{label}
         </Button>
       </div>
     </div>
@@ -635,16 +700,15 @@ function RoleEditor({
             placeholder="例如：buyer"
           />
         </Field>
-        <IconButton
-          type="button"
-          label={`移除角色 ${role.name || index + 1}`}
-          onClick={onRemove}
-        >
+        <IconButton type="button" label={`移除角色 ${role.name || index + 1}`} onClick={onRemove}>
           <Trash2 size={16} />
         </IconButton>
       </div>
       <div className="env-role-config">
-        <span><ShieldCheck size={16} />浏览器状态</span>
+        <span>
+          <ShieldCheck size={16} />
+          浏览器状态
+        </span>
         <span className="env-role-status">
           {role.hasStorageState ? <Check size={16} /> : <Circle size={12} />}
           {role.hasStorageState ? '已配置' : '未配置'}
@@ -657,15 +721,19 @@ function RoleEditor({
             setFileError(undefined)
           }}
         >
-          {role.editStorageState ? <><X size={16} />取消修改</> : '设置'}
+          {role.editStorageState ? (
+            <>
+              <X size={16} />
+              取消修改
+            </>
+          ) : (
+            '设置'
+          )}
         </Button>
       </div>
       {role.editStorageState && (
         <div className="env-secret-input">
-          <Field
-            label="新的 storageState JSON"
-            hint="清空登录态可输入含空 cookies 与 origins 的对象。"
-          >
+          <Field label="新的 storageState JSON" hint="清空登录态可输入含空 cookies 与 origins 的对象。">
             <Input
               className="env-mono"
               type="password"
@@ -677,7 +745,8 @@ function RoleEditor({
           </Field>
           <div className="env-upload-row">
             <Button variant="outline" type="button" onClick={() => fileInput.current?.click()}>
-              <Upload size={16} />导入 JSON
+              <Upload size={16} />
+              导入 JSON
             </Button>
             <input
               ref={fileInput}
@@ -704,14 +773,20 @@ function RoleEditor({
               }}
             />
             {role.storageState && (
-              <span className="env-file-status"><Check size={16} />已输入，保存后生效</span>
+              <span className="env-file-status">
+                <Check size={16} />
+                已输入，保存后生效
+              </span>
             )}
           </div>
           <ErrorNotice error={fileError} />
         </div>
       )}
       <div className="env-role-config">
-        <span><KeyRound size={16} />角色请求头</span>
+        <span>
+          <KeyRound size={16} />
+          角色请求头
+        </span>
         <span className="env-role-status">
           {role.hasHeaders ? <Check size={16} /> : <Circle size={12} />}
           {role.hasHeaders ? '已配置' : '未配置'}
@@ -721,7 +796,14 @@ function RoleEditor({
           type="button"
           onClick={() => onChange({ ...role, editHeaders: !role.editHeaders, headers: '' })}
         >
-          {role.editHeaders ? <><X size={16} />取消修改</> : '设置'}
+          {role.editHeaders ? (
+            <>
+              <X size={16} />
+              取消修改
+            </>
+          ) : (
+            '设置'
+          )}
         </Button>
       </div>
       {role.editHeaders && (
@@ -755,7 +837,10 @@ function ActionEditor({
 }) {
   return (
     <div className="env-action-editor">
-      <div className="env-code-label"><span>{label} JSON</span><span>ApiAction[]</span></div>
+      <div className="env-code-label">
+        <span>{label} JSON</span>
+        <span>ApiAction[]</span>
+      </div>
       <div className="env-json-editor">
         <CodeMirror
           aria-label={`${label} JSON`}

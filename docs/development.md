@@ -2,7 +2,7 @@
 
 # Flowtest Web 工作台
 
-基于 React、TypeScript 与 Vite 的 Web 业务流程测试平台前端。界面参考 Supabase Studio，复用固定版本的 shadcn/ui 与 Radix 组件，使用 Lucide SVG 和 CodeMirror。设计依据见 [设计调研](design-research.md)，组件来源与许可见 [第三方 UI 说明](third-party-ui.md)。生产页面只调用真实后端 API。
+基于 React、TypeScript 与 Vite 的 Web 业务流程测试平台前端。界面参考已确认的 Linear 浅色工作台，复用固定版本的 shadcn/ui 与 Radix 组件，使用 Lucide SVG 和 CodeMirror。设计依据见 [设计调研](design-research.md)，组件来源与许可见 [第三方 UI 说明](third-party-ui.md)。生产页面只调用真实后端 API。
 
 ## 启动
 
@@ -46,9 +46,13 @@ npm run test:e2e
 
 构建产物位于 `dist/`。部署时由同一域名的反向代理提供静态文件，将 `/api`（包括 WebSocket upgrade）转发到后端。`vite preview` 只用于检查构建产物，业务 API 需另外配置同源反向代理；不应将前端静态预览视为完整可用平台。
 
+生产静态路由需要将 `/join` 和应用路由回退到 `index.html`；`/api` 保持独立代理，不能把 API 404 变成 HTML。后端 `E2E_APP_URL` 指向前端的公开 HTTPS origin，用于生成 `/join#token=...`。邀请 token 仅从 fragment 取出并通过 POST body 交给后端。组织、工作区、项目和资源选择保存在可分享的 URL，未保存草稿只保存在内存。
+
+`e2e/organizations.spec.ts` 检查组织创建、工作区隔离、邮箱邀请、注册继续加入、角色调整、最后 owner 保护、只读配置、移除成员、错邮箱切换账号和撤销邀请。运行用户只使用浏览器，Docker、Chromium 和 noVNC 都在服务端。
+
 ## 操作流程
 
-1. 注册或登录，创建项目。
+1. 注册或登录，创建组织或通过邀请链接加入团队。在工作区内创建项目。
 2. 添加测试环境：已部署的网站、API 基址、角色、变量与前置/后置请求。
 3. 新建测试组及场景，使用浏览器录制器或导入 Playwright 文件。
 4. 在 CodeMirror 或检查点面板编辑，填写修改说明并保存新版本。
@@ -59,7 +63,7 @@ npm run test:e2e
 
 ## 数据与证据边界
 
-- 所有请求经过 `src/api.ts`，Cookie 会话与项目授权由后端执行。
+- 所有请求经过 `src/api.ts`，Cookie 会话与组织 RBAC 由后端执行。项目列表必须指定 workspaceId，创建项目必须包含 workspaceId。
 - Playwright 源码是唯一权威。可视化面板使用 Babel AST 的源码位置局部修改；未知结构、注释及模块保持原文。不可靠的修改留在代码编辑器处理。
 - 场景版本只新增，运行绑定的源码与脱敏环境快照来自后端。检查点元数据不能替代实际断言。
 - 运行状态与验证状态分别呈现；只有操作、跳过与重试后通过不会伪装为完全验证。事件按序号追加，首次失败和各次尝试均保留。

@@ -76,6 +76,7 @@ export const api = {
   get: <T>(path: string, signal?: AbortSignal) => request<T>(path, 'GET', undefined, signal),
   post: <T>(path: string, body: unknown = {}) => request<T>(path, 'POST', body),
   patch: <T>(path: string, body: unknown) => request<T>(path, 'PATCH', body),
+  delete: <T>(path: string) => request<T>(path, 'DELETE'),
   async list<T>(path: string, signal?: AbortSignal): Promise<T[]> {
     const items: T[] = []
     let offset = 0

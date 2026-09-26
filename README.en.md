@@ -23,7 +23,7 @@ The complete product uses two repositories: [FastAPI backend + runtimes](https:/
 1. Prepare Python 3.12+, uv, Node.js 24+, npm and a Docker Linux engine for the backend.
 2. Follow the [backend setup commands](https://github.com/ShiqinGuo/e2e-test-svc#quick-start): bootstrap local configuration, start PostgreSQL, run migrations, build both Playwright images, and launch one API worker on port 4100.
 3. Start the workbench with `npm ci` and `npm run dev`; open `http://127.0.0.1:5173` and register your own account.
-4. Create a project and environment pointing to a website reachable from the runner, then create a group and scenario. Record or import a test, save a version, run it, and inspect assertions and Trace.
+4. Create an organization or accept a team invitation. Within a workspace, create a project and environment pointing to a website reachable from the runner, then create a group and scenario. Record or import a test, save a version, run it, and inspect assertions and Trace.
 
 Try the [local order fixture](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/development.md#验证) if you do not have a target website. Flowtest does not deploy the application under test.
 
@@ -31,11 +31,11 @@ Try the [local order fixture](https://github.com/ShiqinGuo/e2e-test-svc/blob/mai
 
 ![React, FastAPI, PostgreSQL and isolated Playwright containers](docs/media/architecture.en.svg)
 
-The FastAPI service owns authentication, project authorization, immutable versions and run state. PostgreSQL stores platform data; private artifacts live in the API host data directory. A trusted Node controller starts Docker runner and recorder containers. Imported tests do not execute inside the API process. [Source map](docs/architecture.md).
+The FastAPI service owns authentication, organization RBAC, immutable versions and run state. PostgreSQL stores platform data; private artifacts live in the API host data directory. A trusted Node controller starts Docker runner and recorder containers. Imported tests do not execute inside the API process. [Source map](docs/architecture.md).
 
 ## Scope and verification
 
-Supports single-owner projects, containerized recording and execution, individual scenarios and test groups. Team membership, distributed execution and direct multi-database assertions are not included.
+Supports organizations, shared workspaces, email-bound invitations, owner/admin/member/viewer roles, containerized recording and execution, individual scenarios and test groups. Distributed execution and direct multi-database assertions are not included.
 
 See the [backend acceptance record](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/acceptance.md) and [workbench acceptance index](https://github.com/ShiqinGuo/e2e-test-fronted/blob/main/docs/redesign-verification.md) for the tested flows and results.
 
@@ -44,3 +44,10 @@ See the [backend acceptance record](https://github.com/ShiqinGuo/e2e-test-svc/bl
 [Detailed setup and checks](docs/development.md) · [Report an issue](https://github.com/ShiqinGuo/e2e-test-fronted/issues)
 
 Flowtest's original code is [MIT licensed](LICENSE). Third-party components retain their own licenses and attribution; see the [UI provenance](https://github.com/ShiqinGuo/e2e-test-fronted/blob/main/docs/third-party-ui.md).
+
+
+## Web collaboration update
+
+Team members use Flowtest entirely in the browser. Create an organization or accept an email-bound invitation, switch workspaces, and manage projects with owner/admin/member/viewer roles. The application now follows the selected Linear-inspired light workspace. Backend services and Playwright containers are operated by the deployment administrator; no desktop client is required.
+
+See [current verification](docs/web-refactor-verification.md) and [API contract](https://github.com/ShiqinGuo/e2e-test-svc/blob/main/docs/api-contract.md). The earlier animation and screenshots above are historical examples of the testing workflow.

@@ -1,0 +1,62 @@
+
+> flowtest-workbench@0.1.0 test:e2e
+> playwright test --retries=0
+
+
+Running 17 tests using 1 worker
+
+(node:60120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 e2e\controls.spec.ts:49:5 › shared controls · 810px › SearchSelect 搜索、上下键选择、Escape 和外部输入焦点 (2.0s)
+  ok  2 e2e\controls.spec.ts:88:5 › shared controls · 810px › SelectControl 通过 Enter 和方向键选择 (726ms)
+  ok  3 e2e\controls.spec.ts:103:5 › shared controls · 810px › 请求变为 pending 时已打开的两类选择器关闭且不能再选择 (1.2s)
+  ok  4 e2e\controls.spec.ts:127:5 › shared controls · 810px › 边缘浮层翻转并保持在视口内 (1.9s)
+  ok  5 e2e\controls.spec.ts:145:5 › shared controls · 810px › Modal 内两类 portal 可交互，关闭后焦点返回原按钮 (2.3s)
+  ok  6 e2e\controls.spec.ts:180:5 › shared controls · 810px › 实际 computed style 保留 140/200ms 动效且遵从 reduced motion (1.7s)
+  ok  7 e2e\controls.spec.ts:49:5 › shared controls · 390px › SearchSelect 搜索、上下键选择、Escape 和外部输入焦点 (1.5s)
+  ok  8 e2e\controls.spec.ts:88:5 › shared controls · 390px › SelectControl 通过 Enter 和方向键选择 (690ms)
+  ok  9 e2e\controls.spec.ts:103:5 › shared controls · 390px › 请求变为 pending 时已打开的两类选择器关闭且不能再选择 (1.1s)
+  ok 10 e2e\controls.spec.ts:127:5 › shared controls · 390px › 边缘浮层翻转并保持在视口内 (1.8s)
+  ok 11 e2e\controls.spec.ts:145:5 › shared controls · 390px › Modal 内两类 portal 可交互，关闭后焦点返回原按钮 (2.4s)
+  ok 12 e2e\controls.spec.ts:180:5 › shared controls · 390px › 实际 computed style 保留 140/200ms 动效且遵从 reduced motion (1.6s)
+  ok 13 e2e\groups.spec.ts:7:1 › 真实 Web 分组执行固化两个独立场景并保留各自证据 (20.5s)
+  ok 14 e2e\organizations.spec.ts:5:1 › 组织创建、工作区隔离、邀请注册加入、角色变更与撤销访问 (11.2s)
+  ok 15 e2e\organizations.spec.ts:127:1 › 邀请邮箱不匹配可切换账号，撤销邀请不可加入 (1.3s)
+  ok 16 e2e\runs.spec.ts:6:1 › 真实执行证据、混合结果、原快照重跑与取消 (21.6s)
+  x  17 e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 (23.2s)
+
+
+  1) e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ──────────────────────────────────────────────
+
+    Error: expect(locator).toBeHidden() failed
+
+    Locator:  getByRole('dialog', { name: '工作区导航' })
+    Expected: hidden
+    Received: visible
+    Timeout:  12000ms
+
+    Call log:
+      - Expect "toBeHidden" getByRole('dialog', { name: '工作区导航' }) with timeout 12000ms
+      - waiting for getByRole('dialog', { name: '工作区导航' })
+        27 × locator resolved to <div role="dialog" tabindex="-1" id="radix-_r_4_" data-state="open" data-slot="sheet-content" aria-labelledby="radix-_r_5_" aria-describedby="radix-_r_6_" class="fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-200 data-[state=open]:animate-in data-[state=open]:duration-200 inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm navigation-s…>…</div>
+           - unexpected value "visible"
+
+
+      137 |   })
+      138 |   await page.keyboard.press('Escape')
+    > 139 |   await expect(page.getByRole('dialog', { name: '工作区导航' })).toBeHidden()
+          |                                                             ^
+      140 |   await expect(navigationTrigger).toBeFocused()
+      141 |   await showSource(page)
+      142 |   await expect(page.getByRole('complementary', { name: '步骤与检查点' })).toBeHidden()
+        at D:\code\e2e-test-fronted\e2e\workbench.spec.ts:139:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\workbench-真实会话、项目环境、场景版本与草稿保护\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\workbench-真实会话、项目环境、场景版本与草稿保护\error-context.md
+
+  1 failed
+    e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ───────────────────────────────────────────────
+  16 passed (1.6m)

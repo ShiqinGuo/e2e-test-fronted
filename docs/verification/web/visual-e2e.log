@@ -1,0 +1,38 @@
+
+Running 4 tests using 1 worker
+
+(node:62632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\organizations.spec.ts:5:1 › 组织创建、工作区隔离、邀请注册加入、角色变更与撤销访问 (9.7s)
+  ok 2 e2e\organizations.spec.ts:130:1 › 邀请邮箱不匹配可切换账号，撤销邀请不可加入 (1.1s)
+  ok 3 e2e\visual-workspace.spec.ts:5:1 › Linear 列表显示、筛选与窄屏布局 (3.4s)
+  x  4 e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 (1.5m)
+
+
+  1) e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ──────────────────────────────────────────────
+
+    Test timeout of 90000ms exceeded.
+
+    Error: locator.click: Test timeout of 90000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: '在验收流程添加场景', exact: true })
+
+
+      54 |   await page.getByLabel('名称', { exact: true }).fill('验收流程')
+      55 |   await page.getByRole('button', { name: '创建', exact: true }).click()
+    > 56 |   await page.getByRole('button', { name: '在验收流程添加场景', exact: true }).click()
+         |                                                                      ^
+      57 |   await page.getByLabel('名称', { exact: true }).fill('技术夹具检查')
+      58 |   await page.getByRole('button', { name: '创建', exact: true }).click()
+      59 |   await expect(page.getByRole('heading', { name: '技术夹具检查' })).toBeVisible()
+        at D:\code\e2e-test-fronted\e2e\workbench.spec.ts:56:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-web-visual\workbench-真实会话、项目环境、场景版本与草稿保护\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-web-visual\workbench-真实会话、项目环境、场景版本与草稿保护\error-context.md
+
+  1 failed
+    e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ───────────────────────────────────────────────
+  3 passed (1.7m)

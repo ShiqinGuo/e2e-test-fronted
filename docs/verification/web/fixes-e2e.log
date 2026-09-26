@@ -1,0 +1,37 @@
+
+Running 3 tests using 1 worker
+
+(node:21612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 e2e\organizations.spec.ts:5:1 › 组织创建、工作区隔离、邀请注册加入、角色变更与撤销访问 (10.9s)
+  ok 2 e2e\organizations.spec.ts:131:1 › 邀请邮箱不匹配可切换账号，撤销邀请不可加入 (1.2s)
+  x  3 e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 (1.5m)
+
+
+  1) e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ──────────────────────────────────────────────
+
+    Test timeout of 90000ms exceeded.
+
+    Error: locator.fill: Test timeout of 90000ms exceeded.
+    Call log:
+      - waiting for getByRole('combobox', { name: '搜索环境…' })
+
+
+      166 |   await expect(source).toContainText('session-recovery-draft')
+      167 |   await page.getByRole('combobox', { name: '运行环境' }).click()
+    > 168 |   await page.getByRole('combobox', { name: '搜索环境…' }).fill('浏览器验收环境')
+          |                                                       ^
+      169 |   await expect(page.getByRole('option', { name: /浏览器验收环境/ })).toBeVisible()
+      170 |   await page.screenshot({
+      171 |     path: 'docs/screenshots/web/workbench-810-environment.png',
+        at D:\code\e2e-test-fronted\e2e\workbench.spec.ts:168:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results-web-fixes\workbench-真实会话、项目环境、场景版本与草稿保护\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results-web-fixes\workbench-真实会话、项目环境、场景版本与草稿保护\error-context.md
+
+  1 failed
+    e2e\workbench.spec.ts:12:1 › 真实会话、项目环境、场景版本与草稿保护 ───────────────────────────────────────────────
+  2 passed (1.7m)

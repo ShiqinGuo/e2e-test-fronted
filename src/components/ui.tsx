@@ -131,7 +131,7 @@ export function SearchSelect({
           role="combobox"
           aria-expanded={open && !suspended && !props.disabled}
           {...props}
-          className={cn('search-select', props.className)}
+          className={cn('search-select border-input', props.className)}
         >
           <span className="select-text">{selected?.label || placeholder}</span>
           <ChevronDown size={16} className="select-chevron" />

@@ -34,7 +34,7 @@ export function RecordingPanel({
     try {
       const result = await api.post<Recording>(`${path}/stop`)
       await recording.refetch()
-      onUseCode(result)
+      if (result.status === 'stopped') onUseCode(result)
     } catch (error) {
       setError(error)
     } finally {
@@ -49,9 +49,13 @@ export function RecordingPanel({
           <strong>浏览器录制</strong>
           <span className="badge">
             {
-              { starting: '正在启动', ready: '录制中', stopped: '已停止', error: '启动失败' }[
-                data?.status || 'starting'
-              ]
+              {
+                starting: '正在启动',
+                ready: '录制中',
+                stopping: '正在停止',
+                stopped: '已停止',
+                error: '录制失败',
+              }[data?.status || 'starting']
             }
           </span>
         </div>
@@ -100,8 +104,10 @@ export function RecordingPanel({
         <Empty title="录制器未能启动" description="修复页面显示的运行环境问题后可重新录制。" />
       ) : (
         <div className="recording-loading">
-          <Spinner label="正在准备远程浏览器" />
-          <p className="muted">启动后将在这里显示真实录制器。</p>
+          <Spinner label={data?.status === 'stopping' ? '正在保存最终录制代码' : '正在准备远程浏览器'} />
+          <p className="muted">
+            {data?.status === 'stopping' ? '完成后可编辑录制代码。' : '启动后将在这里显示真实录制器。'}
+          </p>
         </div>
       )}
     </section>

@@ -40,6 +40,8 @@ export function ScenarioPanel({
   runDisabled,
   guard,
   busy = false,
+  readOnly = false,
+  onBusyChange,
 }: {
   projectId: string
   scenario: Scenario
@@ -49,6 +51,8 @@ export function ScenarioPanel({
   onRun: (versionId?: string) => void
   runDisabled: boolean
   busy?: boolean
+  readOnly?: boolean
+  onBusyChange?: (value: boolean) => void
   guard: (action: () => void) => void
 }) {
   const client = useQueryClient()
@@ -104,7 +108,9 @@ export function ScenarioPanel({
   }
   async function save(e: FormEvent) {
     e.preventDefault()
+    if (readOnly || pending) return
     setPending(true)
+    onBusyChange?.(true)
     setError(null)
     try {
       const version = await api.post<Version>(`${base}/versions`, {
@@ -123,6 +129,7 @@ export function ScenarioPanel({
       setError(error)
     } finally {
       setPending(false)
+      onBusyChange?.(false)
     }
   }
   async function importFile(e: ChangeEvent<HTMLInputElement>) {
@@ -223,7 +230,7 @@ export function ScenarioPanel({
               <Button
                 variant="ghost"
                 type="button"
-                disabled={!!recordingId || busy || versions.isPending || versions.isError}
+                disabled={readOnly || !!recordingId || busy || versions.isPending || versions.isError}
                 onClick={() => {
                   setActionsOpen(false)
                   importInput.current?.click()
@@ -235,7 +242,7 @@ export function ScenarioPanel({
               <Button
                 variant="ghost"
                 type="button"
-                disabled={!!recordingId || busy || versions.isPending || versions.isError}
+                disabled={readOnly || !!recordingId || busy || versions.isPending || versions.isError}
                 onClick={() => {
                   setActionsOpen(false)
                   setModulesOpen(true)
@@ -277,7 +284,7 @@ export function ScenarioPanel({
             label="执行此版本"
             type="button"
             variant="outline"
-            disabled={runDisabled || dirty || !selectedId || !!recordingId}
+            disabled={readOnly || runDisabled || dirty || !selectedId || !!recordingId}
             onClick={() => onRun(selectedId)}
           >
             <Play size={16} />
@@ -289,6 +296,7 @@ export function ScenarioPanel({
               setSaveOpen(true)
             }}
             disabled={
+              readOnly ||
               pending ||
               busy ||
               versions.isPending ||
@@ -309,7 +317,7 @@ export function ScenarioPanel({
       ) : recordingId ? (
         <RecordingPanel projectId={projectId} recordingId={recordingId} onUseCode={useRecording} />
       ) : (
-        <ScenarioEditor code={code} onChange={setCode} readOnly={busy || pending} />
+        <ScenarioEditor code={code} onChange={setCode} readOnly={readOnly || busy || pending} />
       )}
       <Modal
         title="保存新版本"
